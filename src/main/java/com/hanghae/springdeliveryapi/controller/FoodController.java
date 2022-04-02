@@ -8,6 +8,7 @@ import com.hanghae.springdeliveryapi.service.FoodService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,18 +22,13 @@ public class FoodController {
 
     // 음식 등록
     @PostMapping("/restaurant/{restaurantId}/food/register")
-    public Food registerFood(@PathVariable Long restaurantId, @RequestBody FoodDto requestDto){
-        if(foodService.registerFood(restaurantId,requestDto).equals("")){
-            Food food = new Food(requestDto);
-            return foodRepository.save(food);
-        }else{
-            String error = foodService.registerFood(restaurantId, requestDto);
-            throw new IllegalStateException(error);
-        }
+    public void registerFood(@PathVariable Long restaurantId, @RequestBody List<FoodDto> requestDto) {
+        foodService.registerFood(restaurantId, requestDto);
     }
+
     //메뉴판 조회
     @GetMapping("/restaurant/{restaurantID}/foods")
-    public Optional<Food> getFoods(@PathVariable Long restaurantID){
+    public List<Food> getFoods(@PathVariable Long restaurantID){
         return foodRepository.findAllByRestaurantId(restaurantID);
     }
 }
