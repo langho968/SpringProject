@@ -7,10 +7,7 @@ import com.hanghae.springdeliveryapi.repository.FoodRepository;
 import com.hanghae.springdeliveryapi.service.FoodService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController

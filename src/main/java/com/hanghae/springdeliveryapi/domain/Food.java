@@ -16,25 +16,21 @@ public class Food {
     @Id
     private Long id;
 
-    @Column(nullable = false)
-    private Long restaurantId;
+
 
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
     private int price;
-//
-//    public Food(Long restaurantId, String name, int price){
-//        this.restaurantId = restaurantId;
-//        this.name = name;
-//        this.price = price;
-//    }
+
+    @Column(nullable = false)
+    private Long restaurantId;
 
     public Food(FoodDto requestDto, Long restaurantId){
-        this.restaurantId = restaurantId;
         this.name = requestDto.getName();
         this.price = requestDto.getPrice();
+        this.restaurantId = restaurantId;
     }
 
 }
