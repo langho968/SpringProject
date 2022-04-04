@@ -10,9 +10,9 @@ import com.hanghae.springdeliveryapi.repository.FoodOrderRepository;
 import com.hanghae.springdeliveryapi.repository.FoodRepository;
 import com.hanghae.springdeliveryapi.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +26,7 @@ public class OrderService {
     private final FoodOrderItemsRepository foodOrderItemsRepository;
     private final FoodOrderRepository foodOrderRepository;
 
+    @Transactional
     public FoodOrder order(OrderRequestDto orderRequestDto) {
         Restaurant restaurant = restaurantRepository.findById(orderRequestDto.getRestaurantId()).orElseThrow(
                 () -> new IllegalArgumentException()
@@ -35,7 +36,6 @@ public class OrderService {
         List<FoodOrderDto> foodOrderDtoList = new ArrayList<>();
         List<FoodOrderItems> foodOrderItemsList1 = new ArrayList<>();
         int totalPrice = 0;
-        System.out.println(foodOrderList);
         for (FoodOrderItems foodOrderItems : foodOrderList) {
 
             int quantity = foodOrderItems.getQuantity();
@@ -44,9 +44,6 @@ public class OrderService {
             }
             Food food = getFood(foodOrderItems);
             food.getId();
-            System.out.println(food.getName());
-            System.out.println(food.getPrice());
-
             FoodOrderItems foodOrderItems1 = new FoodOrderItems(foodOrderItems, food);
             foodOrderItemsRepository.save(foodOrderItems1);
             FoodOrderDto foodOrderDto = new FoodOrderDto(foodOrderItems, food, restaurant);
@@ -62,21 +59,35 @@ public class OrderService {
         int deliveryFee = restaurant.getDeliveryFee();
         totalPrice += deliveryFee;
         FoodOrder foodOrder = new FoodOrder(restaurant, totalPrice, foodOrderItemsList1);
+        foodOrderRepository.save(foodOrder);
 //        foodOrderRepository.save(foodOrder);
 //        OrderDto orderDto = new OrderDto(foodOrder, deliverFee, foodOrderDtoList);
-        System.out.println(foodOrder.getDeliveryFee());
         return foodOrder;
 
     }
+    @Transactional
+    public List<OrderResponseDto> getOrder(){
+        List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
+        List<FoodOrder> foodOrderList = foodOrderRepository.findAll();
+        for(FoodOrder foodOrder : foodOrderList) {
+            int deliveryFee = restaurantRepository.findByName(foodOrder.getRestaurantName()).getDeliveryFee();
+            System.out.println(foodOrder.getId());
+            List<FoodsResponseDto> foodsResponsedtoList = new ArrayList<>();
+            System.out.println(foodOrderItemsRepository.findAll());
+            List<FoodOrderItems> foodOrderItemsList = foodOrderItemsRepository.findAll();
+            System.out.println(foodOrderItemsList);
+            for(FoodOrderItems foodOrderItems :  foodOrderItemsList){
+                FoodsResponseDto foodsResponseDto = new FoodsResponseDto(foodOrderItems);
+                foodsResponsedtoList.add(foodsResponseDto);
+            }
 
-    private Restaurant getRestaurant(OrderRequestDto orderRequestDto) {
-
-        Restaurant restaurant = restaurantRepository.findById(orderRequestDto.getRestaurantId()).orElseThrow(
-                () -> new IllegalArgumentException()
-        );
-        return restaurant;
+            OrderResponseDto orderResponseDto = new OrderResponseDto(foodOrder, deliveryFee, foodsResponsedtoList);
+            orderResponseDtoList.add(orderResponseDto);
+        }
+        return orderResponseDtoList;
     }
-    private Food getFood(com.hanghae.springdeliveryapi.domain.FoodOrderItems foodOrderItems){
+    
+    private Food getFood(FoodOrderItems foodOrderItems){
         return foodsRepository.findById(foodOrderItems.getId()).orElseThrow(
                 ()-> new IllegalArgumentException()
         );

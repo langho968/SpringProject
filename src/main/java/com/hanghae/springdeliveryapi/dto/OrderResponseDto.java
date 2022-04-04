@@ -6,15 +6,15 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class OrderDto {
+public class OrderResponseDto {
     private String restaurantName;
-    private List<FoodOrderDto> foods;
+    private List<FoodsResponseDto> foods;
     private int deliveryFee;
     private int totalPrice;
 
-    public OrderDto(FoodOrder foodOrder, int deliveryFee, List<FoodOrderDto> foodOrderDtoList){
+    public OrderResponseDto(FoodOrder foodOrder, int deliveryFee, List<FoodsResponseDto> foodsResponseDtoList){
         this.restaurantName = foodOrder.getRestaurantName();
-        this.foods = foodOrderDtoList;
+        this.foods = foodsResponseDtoList;
         this.deliveryFee = deliveryFee;
         this.totalPrice = foodOrder.getTotalPrice();
     }
