@@ -86,7 +86,7 @@ public class OrderService {
         }
         return orderResponseDtoList;
     }
-    
+
     private Food getFood(FoodOrderItems foodOrderItems){
         return foodsRepository.findById(foodOrderItems.getId()).orElseThrow(
                 ()-> new IllegalArgumentException()
